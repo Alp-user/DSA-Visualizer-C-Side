@@ -1,0 +1,1 @@
+1.) Have next and prev buttons to see the steps stacked so that you can easily understand what happened in between each step. 
