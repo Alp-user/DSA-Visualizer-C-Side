@@ -1,0 +1,41 @@
+#version 450 core
+layout (origin_upper_left) in vec4 gl_FragCoord;
+layout (location = 0) in float c_s;
+layout (location = 1) in vec3 color;
+layout (location = 2) in vec2 center;
+layout (location = 3) in vec2 w_h;
+layout (location = 4) in float inthickness;
+layout (location = 0) out vec4 outcolor;
+
+void main(){
+  switch(int (c_s)){
+    case 0:
+
+      float distance = sqrt(pow(gl_FragCoord.x - center.x,2) + pow(gl_FragCoord.y - center.y,2));
+      if((w_h.x - inthickness) > distance){
+        outcolor = vec4(color, 0.0f);
+      }
+      else if((w_h.x) >= distance){
+        outcolor = vec4(color, 1.0f);
+      }
+      else 
+        outcolor = vec4(color, 0.0f);
+      break;
+
+    case 1:
+
+      if(abs(gl_FragCoord.x - center.x)> (w_h.x - inthickness) || abs(gl_FragCoord.y - center.y) > (w_h.y - inthickness) ){
+        outcolor = vec4(color, 1.0f);
+      }
+      else{
+        outcolor = vec4(color, 0.0f);
+      }
+      break;
+
+    case 2:
+      outcolor = vec4(color,1.0f);
+      break;
+    default:
+      break;
+  }
+}

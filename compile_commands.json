@@ -1,0 +1,138 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/glad.o",
+      "src/glad.c"
+    ],
+    "directory": "/home/alp/code_files/c++/works/tree_listener",
+    "file": "/home/alp/code_files/c++/works/tree_listener/src/glad.c",
+    "output": "/home/alp/code_files/c++/works/tree_listener/build/glad.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/stb_image.o",
+      "src/stb_image.c"
+    ],
+    "directory": "/home/alp/code_files/c++/works/tree_listener",
+    "file": "/home/alp/code_files/c++/works/tree_listener/src/stb_image.c",
+    "output": "/home/alp/code_files/c++/works/tree_listener/build/stb_image.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c++17",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/font_loader.o",
+      "src/font_loader.cpp"
+    ],
+    "directory": "/home/alp/code_files/c++/works/tree_listener",
+    "file": "/home/alp/code_files/c++/works/tree_listener/src/font_loader.cpp",
+    "output": "/home/alp/code_files/c++/works/tree_listener/build/font_loader.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c++17",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/GLDebug.o",
+      "src/GLDebug.cpp"
+    ],
+    "directory": "/home/alp/code_files/c++/works/tree_listener",
+    "file": "/home/alp/code_files/c++/works/tree_listener/src/GLDebug.cpp",
+    "output": "/home/alp/code_files/c++/works/tree_listener/build/GLDebug.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c++17",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/program.o",
+      "src/program.cpp"
+    ],
+    "directory": "/home/alp/code_files/c++/works/tree_listener",
+    "file": "/home/alp/code_files/c++/works/tree_listener/src/program.cpp",
+    "output": "/home/alp/code_files/c++/works/tree_listener/build/program.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c++17",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/shader.o",
+      "src/shader.cpp"
+    ],
+    "directory": "/home/alp/code_files/c++/works/tree_listener",
+    "file": "/home/alp/code_files/c++/works/tree_listener/src/shader.cpp",
+    "output": "/home/alp/code_files/c++/works/tree_listener/build/shader.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c++17",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/sprites.o",
+      "src/sprites.cpp"
+    ],
+    "directory": "/home/alp/code_files/c++/works/tree_listener",
+    "file": "/home/alp/code_files/c++/works/tree_listener/src/sprites.cpp",
+    "output": "/home/alp/code_files/c++/works/tree_listener/build/sprites.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-std=c++17",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/sprites_single.o",
+      "src/sprites_single.cpp"
+    ],
+    "directory": "/home/alp/code_files/c++/works/tree_listener",
+    "file": "/home/alp/code_files/c++/works/tree_listener/src/sprites_single.cpp",
+    "output": "/home/alp/code_files/c++/works/tree_listener/build/sprites_single.o"
+  }
+]
