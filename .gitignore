@@ -1,2 +1,5 @@
-/target
-/include
+compile_commands.json
+/build
+program
+
+
