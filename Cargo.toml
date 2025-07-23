@@ -1,0 +1,11 @@
+[package]
+name = "parse_listen"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+gl = "0.14.0"
+glfw = "0.59.0"
+
+[build-dependencies]
+cc = "1.0"
