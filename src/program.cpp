@@ -107,10 +107,16 @@ int main(){
   // Test removing one sprite (triangle)
 
   // Test cleanup (should remove all remaining sprites)
+    glCheckError();
 
-  print_vbo_sprite_debug(fs);
-  print_cpu_side_array(fs);
-  create_text("Here", 100, 100);
+  unsigned int text1 = create_text("Here", 100, 100,0.2);
+    glCheckError();
+  unsigned int text2 = create_text_height("My New One\nI hope it Works\nSoon at least!", 1000.0, 400.0, 70);
+    glCheckError();
+  scale_text(text1, 70);
+
+  print_char_array_debug();
+  print_vbo_debug();
   
   glCheckError();
   while(!glfwWindowShouldClose(window)){

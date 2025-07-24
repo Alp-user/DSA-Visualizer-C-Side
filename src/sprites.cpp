@@ -280,7 +280,7 @@ void CircleSquareSprite::load_changed_data(unsigned int sprite_id) {
   glCheckError();
 }
 
-void print_circle_square_debug(const CircleSquare& cs) {
+void print_circle_square_debug(CircleSquare& cs) {
     printf("\n--- CircleSquare Debug ---\n");
     printf("Type: %s\n", cs.circle_or_square == CIRCLE ? "Circle" : "Square");
     printf("Position: (%.2f, %.2f)\n", cs.x, cs.y);
@@ -291,7 +291,8 @@ void print_circle_square_debug(const CircleSquare& cs) {
     printf("-----------------------------\n");
 }
 
-void print_cpu_side_array(const CircleSquareSprite& sprite) {
+void print_cpu_side_array(CircleSquareSprite& sprite) {
+    sprite.activate();
     printf("\n--- CPU Side Array Debug ---\n");
     printf("Format: [circle(0)/square(1), r, g, b, x, y, width, height, thickness]\n");
     printf("Total elements: %zu\n", sprite.cpu_side_array_other.size());
@@ -305,9 +306,11 @@ void print_cpu_side_array(const CircleSquareSprite& sprite) {
         printf("thick(%.2f)\n", sprite.cpu_side_array_other[i+8]);
     }
     printf("--- End of Debug Output ---\n\n");
+    sprite.deactivate();
 }
 
-void print_vbo_sprite_debug(const CircleSquareSprite& sprite) {
+void print_vbo_sprite_debug(CircleSquareSprite& sprite) {
+    sprite.activate();
     printf("\n--- OpenGL Vertex Buffer Debug ---\n");
     printf("Format: [circle(0)/square(1), r, g, b, x, y, width, height, thickness]\n");
     
@@ -334,7 +337,7 @@ void print_vbo_sprite_debug(const CircleSquareSprite& sprite) {
         printf("Failed to map buffer for reading\n");
     }
     printf("--- End of VBO Debug Output ---\n\n");
-    
+    sprite.deactivate();
 }
 
 void print_active_gl_states(){
