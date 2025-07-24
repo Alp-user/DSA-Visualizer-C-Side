@@ -90,13 +90,12 @@ int main(){
   fs.move(triangle, 500.0f, 100.0f);
 
   // Test coloring for all sprites
+  fs.remove(triangle);
+  fs.cleanup();
   fs.color(circle, 1.0f, 0.0f, 0.0f);    // Red circle
   fs.color(square, 0.0f, 1.0f, 0.0f);    // Green square
   fs.color(rectangle, 0.0f, 0.0f, 1.0f); // Blue rectangle
   fs.color(line, 1.0f, 1.0f, 0.0f);      // Yellow line
-  fs.color(triangle, 1.0f, 0.0f, 1.0f);  // Magenta triangle
-  fs.remove(triangle);
-  fs.cleanup();
 
   // Test scaling for all sprites
   fs.scale(circle, 60.0f, 60.0f, 6.0f);
@@ -117,10 +116,8 @@ int main(){
   while(!glfwWindowShouldClose(window)){
     glClearColor(0.2f, 0.8f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glCheckError();
     //first_sprite.draw();
     //draw_sprites();
-    glCheckError();
     fs.draw();
     render_text();
     //move_text(text2,500 + 400 * sin(glfwGetTime()), 700 );

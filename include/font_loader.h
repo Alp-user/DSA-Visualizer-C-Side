@@ -85,6 +85,7 @@ void print_char_info(char car);
 void print_font_type(FontType* curfont);
 void print_char_array_debug();
 void print_vbo_debug();
+void print_active_gl_states();
 
 
 

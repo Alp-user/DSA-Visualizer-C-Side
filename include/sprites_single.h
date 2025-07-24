@@ -28,7 +28,7 @@ extern "C"{
 
   void remove_sprite(unsigned int sprite_id);
 
-  void shrink_renderer();
+  void sprite_cleanup();
 
   void destroy_renderer();
 

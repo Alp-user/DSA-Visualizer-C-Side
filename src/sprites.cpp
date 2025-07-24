@@ -97,25 +97,6 @@ CircleSquareSprite::CircleSquareSprite() : BaseSprite() {
 void CircleSquareSprite::draw() {
   activate();
   glCheckError();
-  // 1. Get bound VAO
-  GLint vao;
-  glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
-  std::cout << "Bound VAO: " << vao << std::endl;
-
-  // 2. Get active program
-  GLint current_program;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
-  std::cout << "Active program: " << current_program << std::endl;
-
-  // 3. Get buffer bindings
-  GLint array_buffer, element_buffer;
-  glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer);
-  glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &element_buffer);
-  std::cout << "Bound VBO: " << array_buffer << std::endl;
-  std::cout << "Bound EBO: " << element_buffer << std::endl;
-
-  // Draw call with additional checks
-  glCheckError();
   glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, sprite_total);
   glCheckError();
   deactivate();
@@ -353,5 +334,24 @@ void print_vbo_sprite_debug(const CircleSquareSprite& sprite) {
         printf("Failed to map buffer for reading\n");
     }
     printf("--- End of VBO Debug Output ---\n\n");
+    
+}
+
+void print_active_gl_states(){
+    GLint vao;
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+    std::cout << "Bound VAO: " << vao << std::endl;
+
+    // 2. Get active program
+    GLint current_program;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
+    std::cout << "Active program: " << current_program << std::endl;
+
+    // 3. Get buffer bindings
+    GLint array_buffer, element_buffer;
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer);
+    glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &element_buffer);
+    std::cout << "Bound VBO: " << array_buffer << std::endl;
+    std::cout << "Bound EBO: " << element_buffer << std::endl;
 }
 

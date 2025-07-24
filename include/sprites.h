@@ -92,4 +92,5 @@ private:
 void print_circle_square_debug(const CircleSquare& cs);
 void print_cpu_side_array(const CircleSquareSprite& sprite);
 void print_vbo_sprite_debug(const CircleSquareSprite& sprite);
+void print_active_gl_states();
 #endif

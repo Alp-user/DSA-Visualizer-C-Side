@@ -43,14 +43,14 @@ void scale_sprite(unsigned int sprite_id, float width, float height, float thick
 }
 
 void rotate_sprite(unsigned int sprite_id, float thickness){
-  nodes_sprites->scale(sprite_id, nodes_sprites->sprites[sprite_id].x, nodes_sprites->sprites[sprite_id].y, thickness);
+  nodes_sprites->scale(sprite_id, nodes_sprites->sprites[sprite_id].width, nodes_sprites->sprites[sprite_id].height, thickness);
 }
 
 void remove_sprite(unsigned int sprite_id){
   nodes_sprites->remove(sprite_id);
 }
 
-void shrink_renderer(){
+void sprite_cleanup(){
   nodes_sprites->cleanup();
 }
 
