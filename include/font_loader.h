@@ -42,6 +42,7 @@ extern "C" {
     unsigned int start_vbo, end_vbo;
     float x,y;
     float font_size;
+    float rotation;
   } Text;
 }
 
@@ -51,8 +52,8 @@ typedef struct{
 }cpu_char_info;
 
 
-void add_char_info(const char *curchar,  float glo_x,  float glo_y, float font_size);
-void add_string_info(const char *string, float glo_x,  float glo_y, float font_size);
+void add_char_info(const char *curchar,  float glo_x,  float glo_y, float font_size, float rotation);
+void add_string_info(const char *string, float glo_x,  float glo_y, float font_size, float rotation);
 void array_from_texts(unsigned int total_size);
 
 void change_active_font(size_t number);
@@ -67,15 +68,17 @@ extern "C"{
   unsigned int create_text_height(const char *text, float glo_x, float glo_y, unsigned int pixel_line_heigt); 
 
   void move_text(unsigned int text_id, float glo_x, float glo_y);
+  void rotate_text(unsigned int text_id, float angle);
+  void rotate_text_centered(unsigned int text_id, float angle);
   void scale_text(unsigned int text_id, unsigned int pixel_line_heigt);
   void modify_text(unsigned int text_id, const char* new_text);
+  void override_text(unsigned int text_id, float glo_x, float glo_y, float font_size, float rotation);
   void delete_text(unsigned int text_id);
   void load_all(); void load_new();
   void render_text();
   void free_font_resources();
   void text_cleanup();
 
-  void resize_font(float scale_value);
   void resize_window(float width, float height);
   void color_font(float r, float g, float b);
   void vs_off();

@@ -1,9 +1,11 @@
 # Compiler settings
 CC = gcc
 CXX = g++
-CFLAGS = -g -Wall -Wextra -std=c99 -Iinclude
-CXXFLAGS = -g -Wall -Wextra -std=c++17 -Iinclude
-LDFLAGS = -lGL -lglfw
+CFLAGS = -g -Wall -Wextra -std=c99 -Iinclude -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/sysprof-6 -pthread
+
+CXXFLAGS = -g -Wall -Wextra -std=c++17 -Iinclude -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/harfbuzz -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/sysprof-6 -pthread
+
+LDFLAGS = -lGL -lglfw -lfreetype
 
 # Directories
 SRCDIR = src
@@ -58,3 +60,4 @@ help:
 
 # Declare phony targets
 .PHONY: all clean rebuild help
+

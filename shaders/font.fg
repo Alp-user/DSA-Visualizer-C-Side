@@ -1,0 +1,10 @@
+#version 450 core
+layout (location = 0) in vec2 tex_out;
+layout (location = 0) out vec4 output_color;
+layout (binding = 10) uniform sampler2D texture_object;
+layout (location = 2) uniform vec3 color;
+
+void main() {
+  vec4 temp = texture(texture_object, tex_out);
+  output_color = vec4(color, temp.r);
+}

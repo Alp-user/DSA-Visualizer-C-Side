@@ -6,6 +6,7 @@
 #include <glm/common.hpp>
 #include <cassert>
 #include <iostream>
+#include <GLDebug.h>
 #include <sstream>
 
 using std::ifstream;

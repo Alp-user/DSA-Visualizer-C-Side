@@ -4,8 +4,10 @@
 #include <cstddef>
 #include <cstdio>
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/vector_float2.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include <shader.h>
 
 
 #define  line_skip(name)  fscanf(name, "%*[^\n]\n")
@@ -13,7 +15,7 @@
 #define CURRENT_FONT Fonts[active_font]
 #define MAX_PAGES 15 // have a setting to set these numbers up at the start. If I want extra performance only one e.g.
 #define PNG_WIDTH_HEIGHT 512 //SET it to 1024 so that you can upload any font size smaller than 1024 with glTexSubImage3D
-#define CHAR_RENDER_SIZE 8
+#define CHAR_RENDER_SIZE 9
 #define ALLOCATED_STORAGE sizeof(float)*CHAR_RENDER_SIZE*100 //100 characters
 //Make those upper case
 using std::unordered_map;
@@ -38,16 +40,15 @@ static unordered_map<unsigned int, Text> texts;
 static unsigned int index_hash;
 static unsigned int buffer_size;
 
-
 static const char *vertex_shader = "#version 450 core\n"
   "layout (location = 0) in vec3 tex_coords;\n"
   "layout (location = 1) in vec2 scale_vec;\n"
   "layout (location = 2) in vec2 pos_coords;\n"
-  "layout (location = 3) in float font_size;"
+  "layout (location = 3) in float font_size;\n"
+  "layout (location = 4) in float rotation;\n"
   "layout (location = 0) out vec3 tex_out;\n"
   "layout (location = 0) uniform mat4 projection;\n"
-  "layout (location = 1) uniform float scale_factor;\n"
-  "layout (location = 2) uniform vec2 width_height_png;\n"
+  "layout (location = 1) uniform vec2 width_height_png;\n"
    "vec2 quad_pos[6] = vec2[](\n"
    "vec2(0, 0),\n"
    "vec2(1, 0),\n"
@@ -57,29 +58,35 @@ static const char *vertex_shader = "#version 450 core\n"
    "vec2(0, 0)\n"
    ");\n"
   "void main() {\n"
+    "mat2 rot_mat = mat2(cos(rotation), -sin(rotation), sin(rotation), cos(rotation));\n"
+    "vec2 scales = scale_vec * font_size;\n"
+    "vec2 scaled_pos = quad_pos[gl_VertexID] * scales;\n"
+    "vec2 rot_pos = (rot_mat * (scaled_pos)) ;\n"
+    "vec2 trans_pos = rot_pos + pos_coords;\n"
     "if(gl_VertexID == 0 || gl_VertexID == 5){\n"
-      "gl_Position =   projection * vec4((quad_pos[gl_VertexID]*scale_vec * font_size) + pos_coords, 0.0, 1.0);\n"
+      "gl_Position =   projection * vec4(trans_pos, 0.0, 1.0);\n"
       "tex_out = tex_coords;\n"
     "}\n"
     "else if(gl_VertexID == 1){\n"
-      "gl_Position = projection * vec4((quad_pos[gl_VertexID]*scale_vec * font_size) + pos_coords, 0.0, 1.0);\n"
+      "gl_Position =   projection * vec4(trans_pos, 0.0, 1.0);\n"
       "tex_out =  vec3(tex_coords.x + (scale_vec.x/width_height_png.x), tex_coords.y, tex_coords.z);\n"
     "}\n"
     "else if(gl_VertexID == 2 || gl_VertexID == 3){\n"
-      "gl_Position = projection * vec4((quad_pos[gl_VertexID]*scale_vec * font_size) + pos_coords, 0.0, 1.0);\n"
+      "gl_Position =   projection * vec4(trans_pos, 0.0, 1.0);\n"
       "tex_out = vec3(tex_coords.x + (scale_vec.x/width_height_png.x), tex_coords.y - (scale_vec.y/width_height_png.y), tex_coords.z);\n"
     "}\n"
     "else if(gl_VertexID == 4){\n"
-      "gl_Position = projection * vec4((quad_pos[gl_VertexID]*scale_vec * font_size) + pos_coords, 0.0, 1.0);\n"
+      "gl_Position =   projection * vec4(trans_pos, 0.0, 1.0);\n"
       "tex_out =  vec3(tex_coords.x, tex_coords.y - (scale_vec.y/width_height_png.y), tex_coords.z);\n" // should I account for the offset
     "}\n"
   "}\n";
+
 
 static const char *fragment_shader = "#version 450 core\n"
   "layout (location = 0) in vec3 tex_out;\n"
   "layout (location = 0) out vec4 output_color;\n"
   "layout (binding = 10) uniform sampler2DArray texture_object;\n"
-  "layout (location = 3) uniform vec3 color;"
+  "layout (location = 2) uniform vec3 color;"
   "void main() {\n"
     //"output_color = vec4(1.0, 0.0, 0.0, 1.0); // \n"
     "vec4 temp = texture(texture_object, tex_out);\n"
@@ -155,6 +162,7 @@ void initialize_font_renderer(){
   glBindBuffer(GL_ARRAY_BUFFER, VBO); glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VEO);
   glBufferData(GL_ARRAY_BUFFER,buffer_size * sizeof(float) , NULL, GL_DYNAMIC_DRAW);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glCheckError();
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, CHAR_RENDER_SIZE * sizeof(float),(void *) 0);
   glEnableVertexAttribArray(0);
@@ -172,34 +180,34 @@ void initialize_font_renderer(){
   glEnableVertexAttribArray(3);
   glVertexAttribDivisor(3,1);
 
-  vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-  fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(vertex_shader_object, 1, &vertex_shader, NULL);
-  glShaderSource(fragment_shader_object, 1 , &fragment_shader, NULL);
-  glCompileShader(vertex_shader_object); glCompileShader(fragment_shader_object);
-  //glCheckShader(vertex_shader_object); glCheckShader(fragment_shader_object);
-  shader_program = glCreateProgram();
-  glAttachShader(shader_program, vertex_shader_object); glAttachShader(shader_program, fragment_shader_object);
-  glLinkProgram(shader_program);
-  glDeleteShader(vertex_shader_object); glDeleteShader(fragment_shader_object);
+  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, CHAR_RENDER_SIZE * sizeof(float),(void *)(8* sizeof(float)));
+  glEnableVertexAttribArray(4);
+  glVertexAttribDivisor(4,1);
+  glCheckError();
+
+  compile(vertex_shader, fragment_shader, &shader_program);
+  glCheckError();
 
   //Uniform variables
 
   //Orthogonal matrix
   glUseProgram(shader_program);
+  glCheckError();
 
   orthogonal_matrix = glm::ortho(0.0f,1920.0f, 1080.0f, 0.0f);
+  glCheckError();
   glUniformMatrix4fv(0, 1, GL_FALSE,glm::value_ptr(orthogonal_matrix));
 
-  //Scale factor
-  glUniform1f(1, font_size);
   
   //Texture unit
+  glCheckError();
   glUniform1i(glGetUniformLocation(shader_program, "texture_object"), 10);
 
   //color
+  glCheckError();
   color[0] = 1.0f; color[1] = 1.0f; color[2] = 1.0f;
-  glUniform3fv(3, 1, color);
+  glCheckError();
+  glUniform3fv(2, 1, color);
   glCheckError();
   vs_off();
 }
@@ -208,32 +216,23 @@ void change_active_font(size_t number){
   vs();
   active_font = number;
   float width_height[2] = {(float)CURRENT_FONT.scale_x, (float)CURRENT_FONT.scale_y};
-  glUniform2fv(2,1,width_height);
+  glUniform2fv(1,1,width_height);
   vs_off();
 }
 
-void resize_font(float scale_value){
-  vs();
-  font_size = scale_value;
-  glUniform1f(glGetUniformLocation(shader_program, "scale_factor"), font_size);
-  text_cleanup();
-  vs_off();
-  //load_all();
-  glCheckError();
-}
 
 void resize_window(float width, float height){
   vs();
   screen_width = width; screen_height = height;
   orthogonal_matrix = glm::ortho(0.0f,width,0.0f,height);
-  glUniformMatrix4fv(glGetUniformLocation(shader_program, "projection"), 1, GL_FALSE, glm::value_ptr(orthogonal_matrix));
+  glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(orthogonal_matrix));
   text_cleanup();
   vs_off();
 }
 void color_font(float r, float g, float b){
   vs();
   color[0] = r; color[1] = g; color[2] = b;
-  glUniform3fv(3, 1, color);
+  glUniform3fv(2, 1, color);
   vs_off();
 }
 
@@ -301,7 +300,7 @@ void initialize_font(const char* file_name){
 
   glUseProgram(shader_program);
   float width_height[2]= {(float)CURRENT_FONT.scale_x, (float)CURRENT_FONT.scale_y};
-  glUniform2fv(2,1, width_height);
+  glUniform2fv(1,1, width_height);
   vs_off();
   glCheckError();
 }
@@ -330,7 +329,7 @@ void generate_textures(FontType *curfont){
 }
 
 
-void add_char_info(const char *curchar, float glo_x, float glo_y, float font_size){
+void add_char_info(const char *curchar, float glo_x, float glo_y, float font_size, float rotation){
   float nposx, nposy;
   const char_info* cur_char = &get_char_info(*curchar);
 
@@ -350,6 +349,7 @@ void add_char_info(const char *curchar, float glo_x, float glo_y, float font_siz
   cached_chars.current_char_array[cached_chars.index++] = glo_y ;
 
   cached_chars.current_char_array[cached_chars.index++] = font_size;
+  cached_chars.current_char_array[cached_chars.index++] = rotation;
 }
 
 static unsigned int string_length(const char* string){
@@ -371,12 +371,18 @@ static unsigned int string_length_special(const char *string, unsigned int *spec
   return i - number_of_speacials;
 }
 
-void add_string_info(const char *string, float glo_x, float glo_y,float font_size){
+void add_string_info(const char *string, float glo_x, float glo_y,float font_size, float rotation){
   const char* current = string;
   const char_info* cur_char_info = NULL;
   float calc_x_advance = 0;
+  float calc_y_advance = 0;
   float xoff, yoff;
   float original_glo_x = glo_x;
+  float original_glo_y = glo_y;
+  glm::mat2 rotation_matrix(
+    cos(rotation), -sin(rotation),
+    sin(rotation), cos(rotation)
+  );
   //float original_glo_y = glo_y;
 
   for(;*current != 0;current++){
@@ -385,16 +391,29 @@ void add_string_info(const char *string, float glo_x, float glo_y,float font_siz
       cached_chars.current_char_array = (float *) realloc(cached_chars.current_char_array,sizeof(float) * cached_chars.capacity);
     }
     switch (*current){
-      case 10: glo_y += CURRENT_FONT.line_height * font_size; glo_x = original_glo_x; 
+      case 10:{
+        calc_y_advance = CURRENT_FONT.line_height * font_size;
+        glm::vec2 rotated_advance = rotation_matrix * glm::vec2(0, calc_y_advance);
+        glo_x = original_glo_x;
+        glo_y = original_glo_y;
+        glo_x += rotated_advance.x;
+        glo_y += rotated_advance.y;
+        original_glo_x = glo_x;
+        original_glo_y = glo_y;
+        break;
 
-        continue;
-      default:
-        calc_x_advance = get_char_info((unsigned int) *current).x_advance * font_size;
+      } 
+      default:{
+        calc_x_advance = (get_char_info((unsigned int) *current).x_advance * font_size);
         cur_char_info = &get_char_info((unsigned int) *current);
         xoff = cur_char_info->xoff * font_size;
         yoff = cur_char_info -> yoff * font_size;
-        add_char_info(current, glo_x + xoff , glo_y +  yoff, font_size); 
-        glo_x += calc_x_advance;
+        glm::vec2 rot_offs = rotation_matrix * glm::vec2(xoff, yoff) ;
+        glm::vec2 rot_advance = rotation_matrix * glm::vec2(calc_x_advance, 0);
+        add_char_info(current, glo_x + rot_offs.x , glo_y +  rot_offs.y, font_size, rotation); 
+        glo_x += rot_advance.x;
+        glo_y += rot_advance.y;
+      }
     }
   }
 }
@@ -444,7 +463,7 @@ unsigned int create_text(const char *copy_text, float glo_x, float glo_y, float 
   vs();
   glCheckError();
 
-  texts.insert(std::pair<unsigned int, Text>(index_hash,{NULL,0,0, 0,0,0,0}));
+  texts.insert(std::pair<unsigned int, Text>(index_hash,{NULL,0,0, 0,0,0,0,0}));
   Text &current = texts[index_hash];
   unsigned int special_count;
   unsigned int ns_length = string_length_special(copy_text, &special_count);
@@ -454,6 +473,7 @@ unsigned int create_text(const char *copy_text, float glo_x, float glo_y, float 
   current.x = glo_x;
   current.y = glo_y;
   current.font_size = font_size;
+  current.rotation = 0.0f;
   current.text = NULL;
   current.text = (char *) malloc(sizeof(char) * (current.length +special_count+ 1) );
   if(current.text == NULL){
@@ -462,7 +482,7 @@ unsigned int create_text(const char *copy_text, float glo_x, float glo_y, float 
   }
   strcpy(current.text, copy_text);
   glCheckError();
-  add_string_info(current.text, glo_x, glo_y,font_size);
+  add_string_info(current.text, glo_x, glo_y,font_size, 5.0f);
 
   glCheckError();
   load_new();
@@ -514,7 +534,7 @@ void modify_text(unsigned int text_id, const char *new_text){
     }
   }
   cached_chars.index = current.start_vbo;
-  add_string_info(new_text, current.x,current.y,current.font_size);
+  add_string_info(new_text, current.x,current.y,current.font_size, current.rotation);
   for(i = cached_chars.index; i <= current.end_vbo; i++){
     cached_chars.current_char_array[i] = 0;
   }
@@ -599,7 +619,7 @@ void array_from_texts(unsigned int total_size){
 
   for(auto &current : texts){
     auto &data = current.second;
-    add_string_info(data.text, data.x, data.y, data.font_size);
+    add_string_info(data.text, data.x, data.y, data.font_size, data.rotation);
   }
 
   free(old_array);
@@ -636,6 +656,74 @@ void move_text(unsigned int text_id, float glo_x, float glo_y){
   vs_off();
 }
 
+void rotate_text_centered(unsigned int text_id, float angle){
+  vs();
+  auto it = texts.find(text_id);
+
+  if(it == texts.end()){
+    assert(false);
+  }
+  
+  glm::mat2 rotation_matrix(
+    cos(angle), -sin(angle),
+    sin(angle), cos(angle)
+  );
+  float calc_width = 0;
+  float calc_height;
+  float current_line_width = 0;
+  unsigned int number_of_lines = 1;
+  for(const char* current = it->second.text;*current!=0;current++){
+        if(*current == 10){//newline
+          number_of_lines++;
+          if(current_line_width > calc_width) {
+            calc_width = current_line_width;
+          }
+          current_line_width = 0;
+          continue;
+        }
+        current_line_width += get_char_info(*current).x_advance;
+  }
+  if(current_line_width > calc_width) {
+    calc_width = current_line_width;// /2 for distance to center
+  }
+  calc_height = (float)CURRENT_FONT.line_height * number_of_lines /2;
+  calc_width /= 2;
+  glm::vec2 rotated_center = rotation_matrix * glm::vec2(calc_width, calc_height);
+  glm::vec2 center_diff = glm::vec2(calc_width, calc_height) - rotated_center;
+
+  it->second.rotation = angle;
+  unsigned int current_index = cached_chars.index;
+  cached_chars.index = it->second.start_vbo;
+  add_string_info(it->second.text, it->second.x + center_diff.x, it->second.y + center_diff.y, it->second.font_size, it->second.rotation);
+  cached_chars.index = current_index;
+
+  glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * it->second.start_vbo,
+    sizeof(float)* (it->second.end_vbo-it->second.start_vbo + 1),
+    cached_chars.current_char_array + it->second.start_vbo);
+  vs_off();
+}
+
+void rotate_text(unsigned int text_id, float angle){
+  vs();
+  auto it = texts.find(text_id);
+  unsigned int i;
+
+  if(it == texts.end()){
+    assert(false);
+  }
+  
+  it->second.rotation = angle;
+  unsigned int current_index = cached_chars.index;
+  cached_chars.index = it->second.start_vbo;
+  add_string_info(it->second.text, it->second.x, it->second.y, it->second.font_size, it->second.rotation);
+  cached_chars.index = current_index;
+
+  glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * it->second.start_vbo,
+    sizeof(float)* (it->second.end_vbo-it->second.start_vbo + 1),
+    cached_chars.current_char_array + it->second.start_vbo);
+  vs_off();
+}
+
 void scale_text(unsigned int text_id, unsigned int pixel_line_height){
   vs();
   auto it = texts.find(text_id);
@@ -648,7 +736,7 @@ void scale_text(unsigned int text_id, unsigned int pixel_line_height){
   it->second.font_size = (float) pixel_line_height / CURRENT_FONT.line_height;
   unsigned int current_index = cached_chars.index;
   cached_chars.index = it->second.start_vbo;
-  add_string_info(it->second.text, it->second.x, it->second.y, it->second.font_size);
+  add_string_info(it->second.text, it->second.x, it->second.y, it->second.font_size, it->second.rotation);
   cached_chars.index = current_index;
 
   glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * it->second.start_vbo,
@@ -713,7 +801,7 @@ void vs_off(){
 void print_char_array_debug() {
     vs();
     printf("\n--- Cached Characters Array Debug ---\n");
-    printf("Format: [tex_x, tex_y, tex_layer, scale_x, scale_y, pos_x, pos_y]\n");
+    printf("Format: [tex_x, tex_y, tex_layer, scale_x, scale_y, pos_x, pos_y, font_size, rotation]\n");
     printf("Total elements: %zu\n", cached_chars.index);
     
     for (size_t i = 0; i < cached_chars.index; i += CHAR_RENDER_SIZE) {
@@ -738,6 +826,9 @@ void print_char_array_debug() {
 
         printf("font_size(%.2f)", 
                cached_chars.current_char_array[i+7]);
+
+        printf("rotation(%.2f)", 
+               cached_chars.current_char_array[i+8]);
         
         printf("\n");
         
@@ -802,7 +893,7 @@ void print_font_type(FontType* curfont) {
 void print_vbo_debug() {
     vs();
     printf("\n--- OpenGL Vertex Buffer Debug ---\n");
-    printf("Format: [tex_x, tex_y, tex_layer, scale_x, scale_y, pos_x, pos_y]\n");
+    printf("Format: [tex_x, tex_y, tex_layer, scale_x, scale_y, pos_x, pos_y, font_size, rotation]\n");
     
     // Get buffer size and usage
     GLint buffer_size;
@@ -820,6 +911,7 @@ void print_vbo_debug() {
             printf("scale(%.2f, %.2f), ", mapped_data[i+3], mapped_data[i+4]);
             printf("pos(%.2f, %.2f)", mapped_data[i+5], mapped_data[i+6]);
             printf("fs(%.2f)\n", mapped_data[i+7]);
+            printf("rot(%.2f)\n", mapped_data[i+8]);
             
             if(i + CHAR_RENDER_SIZE >= num_elements) break;
         }
@@ -832,4 +924,3 @@ void print_vbo_debug() {
     glCheckError();
     vs_off();
 }
-

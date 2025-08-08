@@ -19,17 +19,17 @@ void main(){
       if(circle_square == 2){
         // inthickness is angle here
         gl_Position = vec4(-(width_height.x), (width_height.y), 0.0f,1.0f);
-        gl_Position= vec4(gl_Position.x * cos(thickness) - 
+        gl_Position= vec4(gl_Position.x * cos(thickness) + 
         gl_Position.y * sin(thickness)
-          ,gl_Position.x * sin(thickness) + gl_Position.y * cos(thickness),
+          ,gl_Position.x * -sin(thickness) + gl_Position.y * cos(thickness),
           0.0f,1.0f);
         gl_Position = projection * vec4(incenter.x + gl_Position.x, incenter.y + gl_Position.y, 0.0f,1.0f);
       }
       else if(circle_square ==  3){
         gl_Position = vec4(0, (width_height.y), 0.0f,1.0f);
-        gl_Position= vec4(gl_Position.x * cos(thickness) - 
+        gl_Position= vec4(gl_Position.x * cos(thickness) + 
         gl_Position.y * sin(thickness)
-          ,gl_Position.x * sin(thickness) + gl_Position.y * cos(thickness),
+          ,gl_Position.x * -sin(thickness) + gl_Position.y * cos(thickness),
           0.0f,1.0f);
         gl_Position = projection * vec4(incenter.x + gl_Position.x, incenter.y + gl_Position.y, 0.0f,1.0f);
       }
@@ -40,17 +40,17 @@ void main(){
     case 1: 
       if(circle_square == 2){
         gl_Position = vec4((width_height.x), (width_height.y), 0.0f,1.0f);
-        gl_Position= vec4(gl_Position.x * cos(thickness) - 
+        gl_Position= vec4(gl_Position.x * cos(thickness) + 
         gl_Position.y * sin(thickness)
-          ,gl_Position.x * sin(thickness) + gl_Position.y * cos(thickness),
+          ,gl_Position.x * -sin(thickness) + gl_Position.y * cos(thickness),
           0.0f,1.0f);
         gl_Position = projection * vec4(incenter.x + gl_Position.x, incenter.y + gl_Position.y, 0.0f,1.0f);
       }
       else if(circle_square ==  3){
         gl_Position = vec4(0, (width_height.y), 0.0f,1.0f);
-        gl_Position= vec4(gl_Position.x * cos(thickness) - 
+        gl_Position= vec4(gl_Position.x * cos(thickness) + 
         gl_Position.y * sin(thickness)
-          ,gl_Position.x * sin(thickness) + gl_Position.y * cos(thickness),
+          ,gl_Position.x * -sin(thickness) + gl_Position.y * cos(thickness),
           0.0f,1.0f);
         gl_Position = projection * vec4(incenter.x + gl_Position.x, incenter.y + gl_Position.y, 0.0f,1.0f);
       }
@@ -62,9 +62,9 @@ void main(){
     case 2: 
       if(circle_square == 2 || circle_square == 3){
         gl_Position = vec4((width_height.x), -(width_height.y), 0.0f,1.0f);
-        gl_Position= vec4(gl_Position.x * cos(thickness) - 
+        gl_Position= vec4(gl_Position.x * cos(thickness) + 
         gl_Position.y * sin(thickness)
-          ,gl_Position.x * sin(thickness) + gl_Position.y * cos(thickness),
+          ,gl_Position.x * -sin(thickness) + gl_Position.y * cos(thickness),
           0.0f,1.0f);
         gl_Position = projection * vec4(incenter.x + gl_Position.x, incenter.y + gl_Position.y, 0.0f,1.0f);
       }
@@ -76,9 +76,9 @@ void main(){
     case 3:
       if(circle_square == 2 || circle_square == 3){
         gl_Position = vec4(-(width_height.x),-(width_height.y), 0.0f,1.0f);
-        gl_Position= vec4(gl_Position.x * cos(thickness) - 
+        gl_Position= vec4(gl_Position.x * cos(thickness) + 
         gl_Position.y * sin(thickness)
-          ,gl_Position.x * sin(thickness) + gl_Position.y * cos(thickness),
+          ,gl_Position.x * -sin(thickness) + gl_Position.y * cos(thickness),
           0.0f,1.0f);
         gl_Position = projection * vec4(incenter.x + gl_Position.x, incenter.y + gl_Position.y, 0.0f,1.0f);
       }
