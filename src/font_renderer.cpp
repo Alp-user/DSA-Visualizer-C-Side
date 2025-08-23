@@ -2,15 +2,40 @@
 #include <utility>
 
 static unsigned int indices_element[] = {0,1,2,2,3,0};
+static unsigned int vao_id, vbo_id, veo_id, program_id;
+
+static FT_Library font_library;
+static FT_Face font_face;
+static GLuint font_texture;
+
+static int pixel_size;//line height
+static int font_pixel_size;
+static int ascender_number_letter;//no symbols
+static glm::ivec2 texture_dimensions;
+static unordered_map<char32_t, CharInfo> font_chars;
+static unordered_map<unsigned int, Text> texts;
+static vector<float> cpu_side_array;
+static unordered_set<unsigned int> changed_keys;
+static unsigned int text_id;
+static unsigned int vbo_size;//in bytes
+
+static glm::vec3 color;
+static glm::mat4 orthogonal;
+
+static int next_power_two(int number);
+static glm::ivec2 rotate_around(const glm::ivec2& center, const glm::ivec2& other, float angle);
+static glm::vec2 rotate_around(const glm::vec2& center, const glm::vec2& other, float angle);
+static void override_data(const Text& text);
 
 void initialize_font_renderer(const char* font_path){
+  glCheckError();
   texture_process(font_path);
+  glCheckError();
   //SHADERS
   std::ifstream text_vs("/home/alp/code_files/c++/works/tree_listener/shaders/font.vs");
   std::ifstream text_fg("/home/alp/code_files/c++/works/tree_listener/shaders/font.fg");
   compile(read_stream_to_cstr(text_vs), read_stream_to_cstr(text_fg), &program_id);
   //BUFFERS
-  glCheckError();
   glCreateVertexArrays(1, &vao_id); glBindVertexArray(vao_id);
   glCheckError();
   glGenBuffers(1, &vbo_id); glGenBuffers(1,&veo_id);
@@ -69,12 +94,15 @@ void texture_process(const char* font_path){
   std::cout << "  Font family: " << font_face->family_name << std::endl;
   std::cout << "  Font style: " << font_face->style_name << std::endl;
 
-  pixel_size = 48;
-  error = FT_Set_Pixel_Sizes(font_face, 0, pixel_size);
+  font_pixel_size = 48;
+  error = FT_Set_Pixel_Sizes(font_face, 0, font_pixel_size);
   assert(!error);
+  //pixel_size = (font_face->size->metrics.ascender >> 6);
+  pixel_size = 38;
 
   /* END FreeType initialization */
   /* Creating texture object */
+
 
   glGenTextures(1, &font_texture);
   glActiveTexture(GL_TEXTURE10);
@@ -83,7 +111,6 @@ void texture_process(const char* font_path){
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glCheckError();
 
   /* END Creating texture object */
   /* Calculate texture atlas size and create texture storage*/
@@ -92,13 +119,13 @@ void texture_process(const char* font_path){
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);//reads in 1 byte chunks
   glTexStorage2D(GL_TEXTURE_2D, 1, GL_R8, texture_dimensions.x, texture_dimensions.y);
   texture_load_chars();
-  //print_font_chars();
 
 }
 
 void texture_load_chars(){
   int current_x = 0; 
   int current_y = 0;
+  ascender_number_letter = 0;
   for(int ascii_code = 32; ascii_code < 127; ascii_code++){
 
     FT_Load_Char(font_face, (char32_t)ascii_code, FT_LOAD_RENDER);
@@ -107,9 +134,8 @@ void texture_load_chars(){
 
     if(current_x + bitmap.width > texture_dimensions.x){
       current_x = 0;
-      current_y += pixel_size + PIXEL_PADDING;
+      current_y += font_pixel_size + PIXEL_PADDING;
     }
-
     //flips
     vector<unsigned char> flipped(bitmap.width * bitmap.rows);
     for (int row = 0; row < bitmap.rows; ++row) {
@@ -131,7 +157,12 @@ void texture_load_chars(){
         GL_UNSIGNED_BYTE, flipped.data());
 
     current_x += bitmap.width + PIXEL_PADDING;
+
+    if(ascii_code > 47 && ascii_code < 91){
+      ascender_number_letter = std::min(ascender_number_letter, current_char.bearings.y);
+    }
   }
+  ascender_number_letter *= -1;
 }
 
 void texture_atlas_dimensions(){
@@ -145,7 +176,7 @@ void texture_atlas_dimensions(){
   }
   //20% padding
   total_area = max_height * total_width;
-  total_area *= 1.2;
+  total_area *= 1.4;
   int log_total_area = next_power_two(total_area);
   if(log_total_area % 2 == 0){
     texture_dimensions.x = texture_dimensions.y = pow(2, log_total_area / 2.0);
@@ -187,7 +218,7 @@ unsigned int create_text(const char* text, int x, int y, int pixel_height){//onl
   unsigned int lines = 1;
 
   //y is top left but line is written from below so one lineheight below
-  glm::ivec2 current_coords(x, y + pixel_height);
+  glm::ivec2 current_coords(x, y + ascender_number_letter * current_text.scale_constant);
   int line_width = 0;
   int max_line_width = 0;
 
@@ -218,7 +249,7 @@ unsigned int create_text(const char* text, int x, int y, int pixel_height){//onl
   max_line_width = std::max(max_line_width, line_width);
   
   int total_width = max_line_width;
-  int total_height = lines * pixel_height;
+  int total_height = (lines - 1) * pixel_height + ascender_number_letter * current_text.scale_constant;
   u32string new_text(text, text + text_length);
   
   current_text.center_coordinates.x = x + total_width / 2;
@@ -281,7 +312,7 @@ unsigned int create_text_centered(const char* text, int center_x, int center_y, 
   
   max_line_width = std::max(max_line_width, line_width);
   
-  int reference_total_height = lines * pixel_size;
+  int reference_total_height = (lines - 1) * pixel_size + ascender_number_letter;
   
   // Calculate scale ratios to fit within bounds
   float width_ratio = (float)max_width / max_line_width;
@@ -354,6 +385,45 @@ void load_all_text_vbo(){
   changed_keys.clear();
 }
 
+void modify_text(unsigned int text_id, const char* text){
+  auto find_it = texts.find(text_id);
+  assert(find_it != texts.end());
+  Text& current_text = find_it->second;
+
+  unsigned int text_length = 0;
+  unsigned int newlines = 0;
+  const char* current = text;
+  for(; *current != '\0'; current++){
+    switch (*current){
+      case 10:{
+        newlines++;
+        continue;
+        break;
+      }
+      default:{
+        text_length++;
+      }
+    }
+  }
+  unsigned int vbo_char_length = (current_text.buffer_indices.y - current_text.buffer_indices.x) / CHAR_RENDER_SIZE;
+  current_text.text = u32string(text, text + text_length + newlines);
+
+  if(text_length > vbo_char_length){
+    float keep_scale_constant = current_text.scale_constant;
+    remove_text(text_id);
+
+    current_text.scale_constant = keep_scale_constant;//remove_text resets the 0 which is a sign for removed
+    load_text_vbo(text_id);
+
+    current_text.buffer_indices.x = cpu_side_array.size();
+    cpu_side_array.resize(cpu_side_array.size() + text_length * CHAR_RENDER_SIZE);
+    current_text.buffer_indices.y = cpu_side_array.size();
+  }
+
+  override_data(current_text);
+  changed_keys.insert(text_id);
+}
+
 void rotate_text(unsigned int text_id, float angle){
   const auto& find_it = texts.find(text_id);
   assert(find_it != texts.end());
@@ -372,11 +442,12 @@ void rotate_text(unsigned int text_id, float angle){
   changed_keys.insert(text_id);
 }
 
-void move_text(unsigned int text_id, glm::ivec2 new_center){
+void move_text(unsigned int text_id, int center_x, int center_y){
   const auto& find_it = texts.find(text_id);
   assert(find_it != texts.end());
   Text& current_text = find_it->second;
   
+  glm::ivec2 new_center(center_x, center_y);
   glm::ivec2 difference = new_center - current_text.center_coordinates;
   for(unsigned int i = current_text.buffer_indices.x; i < current_text.buffer_indices.y; i += CHAR_RENDER_SIZE){
     cpu_side_array[i] += difference.x;
@@ -430,10 +501,18 @@ void scale_text(unsigned int text_id, int pixel_height){
   current_text.coordinates.y = new_y;
   current_text.box_dimensions.x = new_width;
   current_text.box_dimensions.y = new_height;
+
+  override_data(current_text);
   
   // Recreate character positions similar to create_text
+  changed_keys.insert(text_id);
+}
+
+static void override_data(const Text& current_text){
   unsigned int lines = 1;
-  glm::ivec2 current_coords(new_x, new_y + pixel_height);
+  unsigned int first_line_height = current_text.scale_constant * ascender_number_letter;
+  unsigned int pixel_height = current_text.scale_constant * pixel_size;
+  glm::ivec2 current_coords(current_text.coordinates.x, current_text.coordinates.y + first_line_height);
   unsigned int buffer_index = current_text.buffer_indices.x;
   
   for(const char32_t& current : current_text.text){
@@ -441,14 +520,14 @@ void scale_text(unsigned int text_id, int pixel_height){
       case 10:{
         lines++;
         current_coords.y += pixel_height;
-        current_coords.x = new_x;
+        current_coords.x = current_text.coordinates.x;
         break;
       }
       default:{
         const auto& current_char = font_chars[current];
         glm::ivec2 char_coords = current_coords + glm::ivec2(
-            current_char.bearings.x * new_scale_constant,
-            current_char.bearings.y * new_scale_constant
+            current_char.bearings.x * current_text.scale_constant,
+            current_char.bearings.y * current_text.scale_constant
         );
         
         // Update buffer data directly
@@ -456,17 +535,26 @@ void scale_text(unsigned int text_id, int pixel_height){
         cpu_side_array[buffer_index+1] = char_coords.y;
         cpu_side_array[buffer_index+2] = current_char.dimensions.x;
         cpu_side_array[buffer_index+3] = current_char.dimensions.y;
-        cpu_side_array[buffer_index+4] = new_scale_constant;
+        cpu_side_array[buffer_index+4] = current_text.scale_constant;
         cpu_side_array[buffer_index+5] = current_text.rotation;
         cpu_side_array[buffer_index+6] = (float)current_char.atlas.x / texture_dimensions.x;
         cpu_side_array[buffer_index+7] = (float)current_char.atlas.y / texture_dimensions.y;
         
         buffer_index += CHAR_RENDER_SIZE;
-        current_coords.x += current_char.advances.x * new_scale_constant;
+        current_coords.x += current_char.advances.x * current_text.scale_constant;
       }
     }
   }
-  changed_keys.insert(text_id);
+
+  for(;buffer_index < current_text.buffer_indices.y; buffer_index++){
+    cpu_side_array[buffer_index] = 0;
+  }
+}
+
+Text* get_text(unsigned int text_id){
+  auto find_it = texts.find(text_id);
+  assert(find_it != texts.end());
+  return &find_it->second;
 }
 
 void render_text(){
@@ -497,23 +585,6 @@ static glm::vec2 rotate_around(const glm::vec2& center, const glm::vec2& other, 
   return (center + difference);
 }
 
-static glm::ivec2 rotate_around(const glm::ivec2& other, float angle){
-  glm::mat2 rotation_matrix(
-    cos(angle), -sin(angle),
-    sin(angle), cos(angle)
-  );
-  glm::ivec2 difference = (glm::ivec2)(rotation_matrix * (other));
-  return difference;
-}
-
-static glm::vec2 rotate_around(const glm::vec2& other, float angle){
-  glm::mat2 rotation_matrix(
-    cos(angle), -sin(angle),
-    sin(angle), cos(angle)
-  );
-  glm::vec2 difference = (glm::vec2)(rotation_matrix * (other));
-  return difference;
-}
 
 void print_font_chars(){
   std::cout << "Font Characters Information:" << std::endl;
@@ -669,6 +740,7 @@ void print_texts_data(){
     std::cout << "  Scale: " << text_data.scale_constant << "x" << std::endl;
     std::cout << "  Rotation: " << text_data.rotation << " radians" << std::endl;
     std::cout << "  Buffer range: [" << text_data.buffer_indices.x << ", " << text_data.buffer_indices.y << ")" << std::endl;
+    std::cout << "  Box dimensions: [" << text_data.box_dimensions.x << ", " << text_data.box_dimensions.y << ")" << std::endl;
     
     // Calculate buffer size for this text
     int buffer_chars = (text_data.buffer_indices.y - text_data.buffer_indices.x) / CHAR_RENDER_SIZE;

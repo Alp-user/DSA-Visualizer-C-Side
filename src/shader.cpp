@@ -39,27 +39,22 @@ void compile(const char* vertex_shader, const char* fragment_shader, unsigned in
   // 1. compile shaders
   unsigned int vertex, fragment;
   // vertex shader
-  glCheckError();
   vertex = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex, 1, &vertex_shader, NULL);
   glCompileShader(vertex);
   checkCompileErrors(vertex, "VERTEX");
   // fragment Shader
-  glCheckError();
   fragment = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment, 1, &fragment_shader, NULL);
   glCompileShader(fragment);
   checkCompileErrors(fragment, "FRAGMENT");
   // shader Program
-  glCheckError();
   *program_id = glCreateProgram();
   glAttachShader(*program_id, vertex);
   glAttachShader(*program_id, fragment);
   glLinkProgram(*program_id);
   checkCompileErrors(*program_id, "PROGRAM");
   // delete the shaders as they're linked into our program now and no longer necessary
-  glCheckError();
   glDeleteShader(vertex);
   glDeleteShader(fragment);
-  glCheckError();
 }

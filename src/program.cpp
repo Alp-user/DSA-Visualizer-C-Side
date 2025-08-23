@@ -1,5 +1,7 @@
 #include <GLDebug.h>
 #include <algorithm>
+#include <glm/ext/matrix_transform.hpp>
+#include <regex>
 #include <shader.h>
 #include <cstdio>
 #include <sprites.h>
@@ -7,7 +9,6 @@
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <sprites_single.h>
-//#include <font_loader.h>
 #include <font_renderer.h>
 
 static unsigned int screen_width; 
@@ -53,12 +54,12 @@ void print_buffer_vector(CircleSquareSprite &first_sprite){
   first_sprite.activate();
   glGetBufferSubData(GL_ARRAY_BUFFER,0, first_sprite.buffer_size * sizeof(float), info);
   printf("\n vbo");
-  for(int i = 0; i<first_sprite.buffer_size; i++){
+  for(unsigned int i = 0; i<first_sprite.buffer_size; i++){
     printf(" %f", info[i]);
   }
   printf("\n buffer");
   printf("\n vector");
-  print_vector(first_sprite.cpu_side_array_other);
+  //print_vector(first_sprite.cpu_side_array_other);
   first_sprite.deactivate();
   printf("\n vector");
   printf("\n hashmap");
@@ -71,41 +72,35 @@ void print_buffer_vector(CircleSquareSprite &first_sprite){
   }
   printf("\n hashmap");
 }
+
 int main(){
   GLFWwindow *window = initialize_window("oh no", 1920, 1080);
+  glCheckError();
   initialize_font_renderer("/usr/share/fonts/TTF/CaskaydiaCoveNerdFontMono-Regular.ttf");
+  glCheckError();
   new_sprite_renderer();
-  unsigned int text1 = create_text("HABCA", 700, 300, 148);
-  unsigned int text2 = create_text("HAlasdjlf", 300, 300, 148);
-  unsigned int text3 = create_text("sdfjlBCA", 100, 300, 148);
+  glCheckError();
+  unsigned int text1 = create_text_centered("5", 500, 500, 100, 100, 0.0);
+  glCheckError();
   load_all_text_vbo();
+  glCheckError();
+  new_circle(500, 500, 150, 5.0, 1.0, 1.0, 1.0);
+  glCheckError();
 
-  print_font_buffer();
-  print_texts_data();
-
-  remove_text(text1);
-  remove_text(text2);
-  remove_text(text3);
-  load_all_text_vbo();
-  cleanup_text();
-
-  unsigned int rect1 =new_line(500,500,200,5,0.3,1,1,1);
-  unsigned int text4 = create_text_centered("Hello\nHi", 500, 500, 400, 400, 0);
-  rotate_text(text4, 0.3);
   
-  load_all_text_vbo();
-  
-
-  print_font_buffer();
   print_texts_data();
+  print_font_buffer();
 
+  glCheckError();
+  float pixel_height_set = 170;
   while(!glfwWindowShouldClose(window)){
+    pixel_height_set -= 0.1;
     glClearColor(0.2f, 0.8f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    
-    render_text();
-    draw_sprites();
     glCheckError();
+    load_all_text_vbo();
+    draw_sprites();
+    render_text();
 
     glfwSwapBuffers(window);
     glfwPollEvents();

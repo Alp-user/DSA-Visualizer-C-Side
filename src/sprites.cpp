@@ -45,9 +45,6 @@ CircleSquareSprite::CircleSquareSprite() : BaseSprite() {
 
   thickness = 5;
   orthogonal = glm::ortho(0.0f, 1920.0f, 1080.0f, 0.0f);
-  for(int i = 0; i < 16; i++) {
-    cout << orthogonal[i/4][i%4] << " ";
-  }
 
   std::ifstream v_s("/home/alp/code_files/c++/works/tree_listener/shaders/vertex.vs");
   std::ifstream f_g("/home/alp/code_files/c++/works/tree_listener/shaders/fragment.fg");
@@ -107,7 +104,6 @@ unsigned int CircleSquareSprite::add_data(unsigned char c_s, float x, float y, f
   int id1, id2;
   glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &id1);
   glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &id2);
-  printf(" ARRAY %d ELEMENT %d ", id1, id2);
   sprites.insert(pair(key_index, CircleSquare(c_s, x, y, width, height, thick, r, g, b)));
   CircleSquare &data = sprites[key_index];
   add_data_cpu(data);
@@ -225,7 +221,6 @@ void CircleSquareSprite::cleanup() {
   sprite_total -= collect_keys.size();
   cpu_side_array_other.resize(C_S_OSIZE * sprite_total);
   sprites.rehash(0);
-  print_vector(cpu_side_array_other);
   buffer_size = cpu_side_array_other.size();
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * buffer_size, cpu_side_array_other.data(), GL_DYNAMIC_DRAW);
   deactivate();
@@ -243,7 +238,6 @@ void CircleSquareSprite::add_data_cpu(CircleSquare& value) {
   cpu_side_array_other.push_back(value.width);
   cpu_side_array_other.push_back(value.height);
   cpu_side_array_other.push_back(value.thickness);
-  print_vector(cpu_side_array_other);
   glCheckError();
 }
 
@@ -317,7 +311,7 @@ void print_vbo_sprite_debug(CircleSquareSprite& sprite) {
     // Get buffer size
     GLint buffer_size;
     glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &buffer_size);
-    printf("Buffer Size: %d bytes (%d floats)\n", buffer_size, buffer_size / sizeof(float));
+    printf("Buffer Size: %d bytes (%ld floats)\n", buffer_size, buffer_size / sizeof(float));
     
     // Print buffer contents
     printf("\nBuffer Contents:\n");
