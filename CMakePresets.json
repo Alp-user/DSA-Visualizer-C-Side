@@ -1,21 +1,17 @@
 {
-  "version": 4,
+  "version": 8,
   "configurePresets": [
     {
-      "name": "linux-debug",
-      "displayName": "Linux Debug Build",
-      "description": "Configures a debug build for Linux.",
-      "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build",
+      "name": "GCC 15.2.1 x86_64-pc-linux-gnu",
+      "displayName": "GCC 15.2.1 x86_64-pc-linux-gnu",
+      "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/g++",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
       "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+        "CMAKE_C_COMPILER": "/usr/bin/gcc",
+        "CMAKE_CXX_COMPILER": "/usr/bin/g++",
         "CMAKE_BUILD_TYPE": "Debug"
       }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "linux-debug-build",
-      "configurePreset": "linux-debug"
     }
   ]
 }

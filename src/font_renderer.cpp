@@ -318,11 +318,9 @@ unsigned int create_text_centered(const char* text, int center_x, int center_y, 
   float width_ratio = (float)max_width / max_line_width;
   float height_ratio = (float)max_height / reference_total_height;
   
-  // Pick the smaller ratio and apply 0.9 padding
-  float final_scale = std::min(width_ratio, height_ratio) * 0.9f;
+  float final_scale = std::min(width_ratio, height_ratio) * 0.7f;
   int final_pixel_height = pixel_size * final_scale;
   
-  // Calculate final dimensions
   int final_width = max_line_width * final_scale;
   int final_height = reference_total_height * final_scale;
   
