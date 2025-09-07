@@ -340,7 +340,7 @@ CMakeFiles/program.dir/src/program.cpp.o: \
  /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++io.h \
  /usr/include/c++/15.2.1/bits/fstream.tcc \
  /home/alp/code_files/c++/works/tree_listener/include/sprites.h \
- /usr/include/glm/ext/matrix_clip_space.hpp \
+ /usr/include/glm/fwd.hpp /usr/include/glm/ext/matrix_clip_space.hpp \
  /usr/include/glm/ext/matrix_clip_space.inl \
  /usr/include/glm/gtc/type_ptr.hpp /usr/include/glm/gtc/quaternion.hpp \
  /usr/include/glm/gtc/matrix_transform.hpp \
@@ -395,8 +395,7 @@ CMakeFiles/program.dir/src/program.cpp.o: \
  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
  /usr/include/bits/uio_lim.h /usr/include/c++/15.2.1/cfloat \
  /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/float.h \
- /usr/include/glm/fwd.hpp /usr/include/glm/packing.hpp \
- /usr/include/glm/detail/func_packing.inl \
+ /usr/include/glm/packing.hpp /usr/include/glm/detail/func_packing.inl \
  /usr/include/glm/detail/type_half.hpp \
  /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
  /usr/include/glm/detail/func_integer.inl /usr/include/GLFW/glfw3.h \

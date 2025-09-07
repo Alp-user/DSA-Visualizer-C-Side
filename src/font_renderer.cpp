@@ -1,4 +1,7 @@
 #include <font_renderer.h>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/fwd.hpp>
 #include <utility>
 
 static unsigned int indices_element[] = {0,1,2,2,3,0};
@@ -81,6 +84,15 @@ void initialize_font_renderer(const char* font_path){
 
   deactivate();
 
+}
+
+void set_uniform_matrix(float width, float height, float cam_horizontal, float cam_vertical){
+  activate();
+  glm::mat4 camera_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-cam_horizontal, cam_vertical, 0.0));
+  glm::mat4 final_matrix = glm::ortho(0.0f, width, height, 0.0f, -10.0f, 10.0f) * camera_matrix;
+  glUniformMatrix4fv(0,1,GL_FALSE, glm::value_ptr(final_matrix));
+  glCheckError();
+  deactivate();
 }
 
 void texture_process(const char* font_path){

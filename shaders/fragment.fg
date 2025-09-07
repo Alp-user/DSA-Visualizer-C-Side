@@ -5,13 +5,16 @@ layout (location = 1) in vec3 color;
 layout (location = 2) in vec2 center;
 layout (location = 3) in vec2 w_h;
 layout (location = 4) in float inthickness;
+
+layout (location = 1) uniform vec2 camera_shift;
+
 layout (location = 0) out vec4 outcolor;
 
 void main(){
   switch(int (c_s)){
     case 0:
-
-      float distance = sqrt(pow(gl_FragCoord.x - center.x,2) + pow(gl_FragCoord.y - center.y,2));
+      vec2 shifted_center = vec2(center.x - camera_shift.x, center.y + camera_shift.y);
+      float distance = sqrt(pow(gl_FragCoord.x - shifted_center.x,2) + pow(gl_FragCoord.y - shifted_center.y,2));
       if((w_h.x - inthickness) > distance){
         outcolor = vec4(color, 0.0f);
       }
@@ -20,6 +23,7 @@ void main(){
       }
       else 
         outcolor = vec4(color, 0.0f);
+
       break;
 
     case 1:

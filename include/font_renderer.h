@@ -46,6 +46,7 @@ extern "C"{
   unsigned int create_text_centered(const char* text, int center_x, int center_y, int max_width, int max_height, float rotation);
   void load_text_vbo(unsigned int text_id);
   void load_all_text_vbo();
+  void set_uniform_matrix(float width, float height, float cam_horizontal, float cam_vertical);
 
   void move_text(unsigned int text_id, int center_x, int center_y);// this moves the center
   void rotate_text(unsigned int text_id, float angle);// this rotates around the center

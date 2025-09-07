@@ -2,44 +2,49 @@ CMakeFiles/program.dir/src/sprites.cpp.o: \
  /home/alp/code_files/c++/works/tree_listener/src/sprites.cpp \
  /usr/include/stdc-predef.h \
  /home/alp/code_files/c++/works/tree_listener/include/sprites.h \
- /home/alp/code_files/c++/works/tree_listener/include/shader.h \
- /home/alp/code_files/c++/works/tree_listener/include/glad/glad.h \
- /home/alp/code_files/c++/works/tree_listener/include/KHR/khrplatform.h \
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h \
- /usr/include/stdint.h /usr/include/bits/libc-header-start.h \
+ /usr/include/glm/fwd.hpp /usr/include/glm/detail/qualifier.hpp \
+ /usr/include/glm/detail/setup.hpp /usr/include/c++/15.2.1/cassert \
+ /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+ /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/bits/wordsize.h /usr/include/bits/timesize.h \
  /usr/include/sys/cdefs.h /usr/include/bits/long-double.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
+ /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+ /usr/include/c++/15.2.1/pstl/pstl_config.h /usr/include/assert.h \
+ /usr/include/c++/15.2.1/cstddef \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+ /usr/include/c++/15.2.1/bits/version.h /usr/include/glm/simd/platform.h \
+ /usr/include/c++/15.2.1/cstdint \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h \
+ /usr/include/stdint.h /usr/include/bits/libc-header-start.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/bits/time64.h /usr/include/bits/wchar.h \
  /usr/include/bits/stdint-intn.h /usr/include/bits/stdint-uintn.h \
- /usr/include/bits/stdint-least.h /usr/include/c++/15.2.1/fstream \
+ /usr/include/bits/stdint-least.h /usr/include/c++/15.2.1/type_traits \
+ /home/alp/code_files/c++/works/tree_listener/include/shader.h \
+ /home/alp/code_files/c++/works/tree_listener/include/glad/glad.h \
+ /home/alp/code_files/c++/works/tree_listener/include/KHR/khrplatform.h \
+ /usr/include/c++/15.2.1/fstream \
  /usr/include/c++/15.2.1/bits/requires_hosted.h \
- /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
- /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
- /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
- /usr/include/c++/15.2.1/pstl/pstl_config.h \
  /usr/include/c++/15.2.1/istream /usr/include/c++/15.2.1/ios \
  /usr/include/c++/15.2.1/iosfwd /usr/include/c++/15.2.1/bits/stringfwd.h \
  /usr/include/c++/15.2.1/bits/memoryfwd.h \
  /usr/include/c++/15.2.1/bits/postypes.h /usr/include/c++/15.2.1/cwchar \
  /usr/include/wchar.h /usr/include/bits/floatn.h \
  /usr/include/bits/floatn-common.h \
- /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdarg.h \
  /usr/include/bits/types/wint_t.h /usr/include/bits/types/mbstate_t.h \
  /usr/include/bits/types/__mbstate_t.h /usr/include/bits/types/__FILE.h \
  /usr/include/bits/types/FILE.h /usr/include/bits/types/locale_t.h \
  /usr/include/bits/types/__locale_t.h /usr/include/c++/15.2.1/exception \
  /usr/include/c++/15.2.1/bits/exception.h \
- /usr/include/c++/15.2.1/bits/version.h \
  /usr/include/c++/15.2.1/bits/exception_ptr.h \
  /usr/include/c++/15.2.1/bits/exception_defines.h \
  /usr/include/c++/15.2.1/bits/cxxabi_init_exception.h \
  /usr/include/c++/15.2.1/typeinfo \
  /usr/include/c++/15.2.1/bits/hash_bytes.h /usr/include/c++/15.2.1/new \
- /usr/include/c++/15.2.1/bits/move.h /usr/include/c++/15.2.1/type_traits \
+ /usr/include/c++/15.2.1/bits/move.h \
  /usr/include/c++/15.2.1/bits/nested_exception.h \
  /usr/include/c++/15.2.1/bits/char_traits.h \
  /usr/include/c++/15.2.1/bits/localefwd.h \
@@ -130,7 +135,6 @@ CMakeFiles/program.dir/src/sprites.cpp.o: \
  /usr/include/c++/15.2.1/bits/charconv.h \
  /usr/include/c++/15.2.1/bits/basic_string.tcc \
  /usr/include/c++/15.2.1/bits/memory_resource.h \
- /usr/include/c++/15.2.1/cstddef \
  /usr/include/c++/15.2.1/bits/uses_allocator.h \
  /usr/include/c++/15.2.1/bits/uses_allocator_args.h \
  /usr/include/c++/15.2.1/tuple \
@@ -155,9 +159,6 @@ CMakeFiles/program.dir/src/sprites.cpp.o: \
  /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/basic_file.h \
  /usr/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++io.h \
  /usr/include/c++/15.2.1/bits/fstream.tcc /usr/include/glm/common.hpp \
- /usr/include/glm/detail/qualifier.hpp /usr/include/glm/detail/setup.hpp \
- /usr/include/c++/15.2.1/cassert /usr/include/assert.h \
- /usr/include/glm/simd/platform.h /usr/include/c++/15.2.1/cstdint \
  /usr/include/glm/detail/_fixes.hpp /usr/include/c++/15.2.1/cmath \
  /usr/include/math.h /usr/include/bits/math-vector.h \
  /usr/include/bits/libm-simd-decl-stubs.h \
@@ -356,8 +357,7 @@ CMakeFiles/program.dir/src/sprites.cpp.o: \
  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
  /usr/include/bits/uio_lim.h /usr/include/c++/15.2.1/cfloat \
  /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/float.h \
- /usr/include/glm/fwd.hpp /usr/include/glm/packing.hpp \
- /usr/include/glm/detail/func_packing.inl \
+ /usr/include/glm/packing.hpp /usr/include/glm/detail/func_packing.inl \
  /usr/include/glm/detail/type_half.hpp \
  /usr/include/glm/detail/type_half.inl /usr/include/glm/integer.hpp \
  /usr/include/glm/detail/func_integer.inl

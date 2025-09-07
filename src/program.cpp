@@ -87,6 +87,8 @@ int main(){
   new_circle(500, 500, 150, 5.0, 1.0, 1.0, 1.0);
   glCheckError();
 
+  // set_uniform_matrix(1920, 1080, 200,200);
+  // sprite_uniform_matrix(1920, 1080, 200,200);
   
   print_texts_data();
   print_font_buffer();
@@ -99,6 +101,7 @@ int main(){
     glClear(GL_COLOR_BUFFER_BIT);
     glCheckError();
     load_all_text_vbo();
+    glCheckError();
     draw_sprites();
     render_text();
 

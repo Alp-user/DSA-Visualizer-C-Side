@@ -68,6 +68,9 @@ CircleSquare* get_sprite(unsigned int sprite_id){
   return &(it->second);
 }
 
-void draw_sprites(){ nodes_sprites->draw();
+void draw_sprites(){ nodes_sprites->draw();}
+
+void sprite_uniform_matrix(float width, float height, float cam_horizontal, float cam_vertical) {
+  nodes_sprites->sprite_uniform_matrix(width, height, cam_horizontal, cam_vertical);
 }
 

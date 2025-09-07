@@ -1,6 +1,7 @@
 #ifndef SPRITES_H
 #define SPRITES_H
 
+#include <glm/fwd.hpp>
 #include <shader.h>
 #include <cassert>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -56,7 +57,6 @@ class BaseSprite {
 public:
   unsigned int program_id, vao_id, vbo_id, veo_id;
   unsigned int key_index, sprite_total, buffer_size;
-
   BaseSprite();
   void activate();
   void deactivate();
@@ -82,6 +82,7 @@ public:
   void scale(unsigned int sprite_id, float width, float height, float thickness);
   void remove(unsigned int sprite_id);
   void cleanup();
+  void sprite_uniform_matrix(float width, float height, float cam_horizontal, float cam_vertical);
 
 private:
   void add_data_cpu(CircleSquare& value);

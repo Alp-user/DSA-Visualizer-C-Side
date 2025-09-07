@@ -4,6 +4,7 @@
 
 extern "C"{
   void new_sprite_renderer();
+
   void destroy_sprite_renderer();
 
   unsigned int new_line(float x, float y,float width, float height, float angle, float r, float g, float b);
@@ -35,6 +36,8 @@ extern "C"{
   CircleSquare* get_sprite(unsigned int sprite_id);
 
   void draw_sprites();
+
+  void sprite_uniform_matrix(float width, float height, float cam_horizontal, float cam_vertical);
 }
 
 #endif

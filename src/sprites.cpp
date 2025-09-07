@@ -18,6 +18,7 @@ unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
 BaseSprite::BaseSprite() {}
 void BaseSprite::activate() {
+  glCheckError();
   glBindVertexArray(vao_id);
   glUseProgram(program_id);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
@@ -45,6 +46,7 @@ CircleSquareSprite::CircleSquareSprite() : BaseSprite() {
 
   thickness = 5;
   orthogonal = glm::ortho(0.0f, 1920.0f, 1080.0f, 0.0f);
+  glCheckError();
 
   std::ifstream v_s("/home/alp/code_files/c++/works/tree_listener/shaders/vertex.vs");
   std::ifstream f_g("/home/alp/code_files/c++/works/tree_listener/shaders/fragment.fg");
@@ -53,8 +55,11 @@ CircleSquareSprite::CircleSquareSprite() : BaseSprite() {
   compile(v_ss, f_gs, &program_id);
   free(v_ss); free(f_gs);
 
+  glCheckError();
   glUseProgram(program_id);
   glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(orthogonal));
+  glUniform2f(1, 0.0, 0.0);
+  glCheckError();
 
   glCreateVertexArrays(1, &vao_id);
   glBindVertexArray(vao_id);
@@ -97,6 +102,17 @@ void CircleSquareSprite::draw() {
   glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, sprite_total);
   glCheckError();
   deactivate();
+}
+
+void CircleSquareSprite::sprite_uniform_matrix(float width, float height, float cam_horizontal, float cam_vertical){
+  activate();
+  glm::mat4 camera_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-cam_horizontal, cam_vertical, 0.0));
+  glm::mat4 final_matrix = glm::ortho(0.0f, width, height, 0.0f, -10.0f, 10.0f) * camera_matrix;
+  glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(final_matrix));
+  glUniform2f(1, cam_horizontal, cam_vertical);
+  glCheckError();
+  deactivate();
+
 }
 
 unsigned int CircleSquareSprite::add_data(unsigned char c_s, float x, float y, float width, float height, float thick, float r, float g, float b) {
